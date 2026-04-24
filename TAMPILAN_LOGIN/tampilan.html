@@ -227,17 +227,17 @@
 
     <!-- Email -->
     <div class="field">
-      <label class="lbl-email" for="email">Email</label>
+      <label class="lbl-email" for="email">Passwword</label>
       <div class="input-box">
         <svg class="ico" viewBox="0 0 24 24" fill="#f093fb">
           <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/>
         </svg>
-        <input type="email" id="email" placeholder="nama@email.com" />
+        <input type="password" id="password" placeholder="password" />
       </div>
     </div>
 
     <!-- Tombol -->
-    <button class="btn" onclick="doLogin()">🚀 Login Sekarang</button>
+    <button type="submit" class="btn" onclick="doLogin()"> Login Sekarang</button>
 
     <div class="note">
       Belum punya akun? <a href="#">Daftar di sini</a>
@@ -249,38 +249,17 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    let toastTimer;
+   function doLogin(){
+    let user = document.getElementById('username').value;
+    let pass = document.getElementById('email').value;
 
-    function showToast(msg, isOk) {
-      const el = document.getElementById('toast');
-      el.textContent = msg;
-      el.className = 'toast ' + (isOk ? 'ok' : 'err') + ' show';
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+    if(user === "rezky" && pass === "ACC"){
+      alert('berhasil');
     }
-
-    function doLogin() {
-      const username = document.getElementById('username').value.trim();
-      const email    = document.getElementById('email').value.trim();
-
-      if (!username || !email) {
-        showToast('⚠️ Harap isi semua field!', false);
-        return;
-      }
-
-      const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-      if (!emailValid) {
-        showToast('⚠️ Format email tidak valid!', false);
-        return;
-      }
-
-      showToast('✅ Login berhasil! Halo, ' + username + '!', true);
+    else{
+      alert("gagal");
     }
-
-    // Tekan Enter di field email untuk login
-    document.getElementById('email').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') doLogin();
-    });
+   }
   </script>
 
 </body>
