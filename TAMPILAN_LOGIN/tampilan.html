@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
+    }
+
+    /* ── KARTU ── */
+    .card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 2.8rem 2.2rem;
+      width: 100%;
+      max-width: 370px;
+      box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+      animation: pop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes pop {
+      from { opacity: 0; transform: scale(0.92); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    /* ── HEADER ── */
+    .top {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea, #f093fb);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .avatar svg {
+      width: 30px;
+      height: 30px;
+      fill: white;
+    }
+
+    .top h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #2d2d2d;
+    }
+
+    .top p {
+      font-size: 13px;
+      color: #aaa;
+      margin-top: 4px;
+    }
+
+    /* ── FIELD ── */
+    .field {
+      margin-bottom: 1.2rem;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 7px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .lbl-user  { color: #667eea; }
+    .lbl-email { color: #f093fb; }
+
+    .input-box {
+      position: relative;
+    }
+
+    .input-box input {
+      width: 100%;
+      height: 46px;
+      padding: 0 14px 0 42px;
+      border: 2px solid #ededff;
+      border-radius: 12px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #2d2d2d;
+      background: #f9f8ff;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    #username:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+      background: #fff;
+    }
+
+    #email:focus {
+      border-color: #f093fb;
+      box-shadow: 0 0 0 4px rgba(240, 147, 251, 0.15);
+      background: #fff;
+    }
+
+    .input-box input::placeholder { color: #ccc; }
+
+    .ico {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      pointer-events: none;
+    }
+
+    /* ── TOMBOL LOGIN ── */
+    .btn {
+      width: 100%;
+      height: 50px;
+      border: none;
+      border-radius: 14px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      background: linear-gradient(135deg, #667eea, #f093fb);
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+      margin-top: 0.3rem;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(102, 126, 234, 0.45);
+    }
+
+    .btn:active { transform: scale(0.97); }
+
+    /* ── CATATAN BAWAH ── */
+    .note {
+      text-align: center;
+      margin-top: 1.3rem;
+      font-size: 12px;
+      color: #bbb;
+    }
+
+    .note a {
+      color: #667eea;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .note a:hover { text-decoration: underline; }
+
+    /* ── TOAST NOTIFIKASI ── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(70px);
+      padding: 12px 26px;
+      border-radius: 12px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.3s, opacity 0.3s;
+      white-space: nowrap;
+    }
+
+    .toast.ok  { background: linear-gradient(135deg, #667eea, #f093fb); color: #fff; }
+    .toast.err { background: #ff5c5c; color: #fff; }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+
+    <!-- Header -->
+    <div class="top">
+      <div class="avatar">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+        </svg>
+      </div>
+      <h1>Selamat Datang!</h1>
+      <p>Masuk ke akun Anda</p>
+    </div>
+
+    <!-- Username -->
+    <div class="field">
+      <label class="lbl-user" for="username">Username</label>
+      <div class="input-box">
+        <svg class="ico" viewBox="0 0 24 24" fill="#667eea">
+          <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+        </svg>
+        <input type="text" id="username" placeholder="Masukkan username" />
+      </div>
+    </div>
+
+    <!-- Email -->
+    <div class="field">
+      <label class="lbl-email" for="email">Password</label>
+      <div class="input-box">
+        <svg class="ico" viewBox="0 0 24 24" fill="#f093fb">
+          <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/>
+        </svg>
+        <input type="password" id="email" placeholder="nama@email.com" />
+      </div>
+    </div>
+
+    <!-- Tombol -->
+    <button type="submit" class="btn" onclick="doLogin()">🚀 Login Sekarang</button>
+
+    <div class="note">
+      Belum punya akun? <a href="#">Daftar di sini</a>
+    </div>
+
+  </div>
+
+  <!-- Notifikasi -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+   function doLogin(){
+    let user = document.getElementById('username').value;
+    let pass = document.getElementById('email').value;
+
+    if(user === "rezky" && pass === "ACC"){
+      alert('berhasil');
+    }
+    else{
+      alert("gagal");
+    }
+   }
+  </script>
+
+</body>
+</html>
