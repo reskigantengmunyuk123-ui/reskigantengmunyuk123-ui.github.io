@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kalkulator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .calc {
+      background: #1e1e30;
+      border-radius: 24px;
+      padding: 1.5rem;
+      width: 300px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+      animation: pop 0.45s ease;
+    }
+
+    @keyframes pop {
+      from { opacity: 0; transform: scale(0.9); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .screen {
+      background: #12121f;
+      border-radius: 16px;
+      padding: 1rem;
+      margin-bottom: 1.2rem;
+      min-height: 90px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: flex-end;
+    }
+
+    .expr {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .result {
+      font-size: 36px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    button {
+      height: 58px;
+      border: none;
+      border-radius: 14px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:active { transform: scale(0.9); }
+
+    .btn-num { background: #2a2a40; color: #fff; }
+    .btn-op { background: #3d3a6b; color: #a78bfa; }
+    .btn-eq { background: linear-gradient(135deg, #667eea, #a78bfa); color: #fff; grid-column: span 2; }
+    .btn-clear { background: #4a1942; color: #f472b6; }
+    .btn-del { background: #2a2a40; color: #f472b6; }
+    .btn-zero { grid-column: span 2; }
+  </style>
+</head>
+<body>
+
+<div class="calc">
+
+  <div class="screen">
+    <div class="expr" id="expr"></div>
+    <div class="result" id="result">0</div>
+  </div>
+
+  <div class="grid">
+    <button class="btn-clear" onclick="clearAll()">AC</button>
+    <button class="btn-del" onclick="del()">⌫</button>
+    <button class="btn-op" onclick="input('%')">%</button>
+    <button class="btn-op" onclick="input('/')">÷</button>
+
+    <button class="btn-num" onclick="input('7')">7</button>
+    <button class="btn-num" onclick="input('8')">8</button>
+    <button class="btn-num" onclick="input('9')">9</button>
+    <button class="btn-op" onclick="input('*')">×</button>
+
+    <button class="btn-num" onclick="input('4')">4</button>
+    <button class="btn-num" onclick="input('5')">5</button>
+    <button class="btn-num" onclick="input('6')">6</button>
+    <button class="btn-op" onclick="input('-')">−</button>
+
+    <button class="btn-num" onclick="input('1')">1</button>
+    <button class="btn-num" onclick="input('2')">2</button>
+    <button class="btn-num" onclick="input('3')">3</button>
+    <button class="btn-op" onclick="input('+')">+</button>
+
+    <button class="btn-num btn-zero" onclick="input('0')">0</button>
+    <button class="btn-num" onclick="input('.')">.</button>
+    <button class="btn-eq" onclick="calculate()">=</button>
+  </div>
+
+</div>
+
+<script>
+let expr = '';
+let justCalc = false;
+
+function updateScreen() {
+  const display = expr.replace(/\*/g, '×').replace(/\//g, '÷');
+  document.getElementById('expr').textContent = display;
+}
+
+function input(val) {
+  const ops = ['+', '-', '*', '/', '%'];
+
+  if (justCalc && !ops.includes(val)) expr = '';
+  justCalc = false;
+
+  if (ops.includes(val) && ops.includes(expr.slice(-1))) {
+    expr = expr.slice(0, -1);
+  }
+
+  if (val === '.' && /\.\d*$/.test(expr.split(/[+\-*/]/).pop())) return;
+
+  expr += val;
+  updateScreen();
+
+  // ❌ Tidak menghitung otomatis
+  document.getElementById('result').textContent = expr || '0';
+}
+
+function clearAll() {
+  expr = '';
+  justCalc = false;
+  document.getElementById('result').textContent = '0';
+  document.getElementById('expr').textContent = '';
+}
+
+function del() {
+  expr = expr.slice(0, -1);
+  updateScreen();
+  document.getElementById('result').textContent = expr || '0';
+}
+
+function calculate() {
+  if (!expr) return;
+  try {
+    const r = Function('"use strict"; return (' + expr + ')')();
+    document.getElementById('expr').textContent =
+      expr.replace(/\*/g, '×').replace(/\//g, '÷') + ' =';
+    document.getElementById('result').textContent =
+      isFinite(r) ? +r.toFixed(10).toString() : 'Error';
+    expr = String(r);
+    justCalc = true;
+  } catch {
+    document.getElementById('result').textContent = 'Error';
+    expr = '';
+  }
+}
+
+document.addEventListener('keydown', function (e) {
+  if ('0123456789'.includes(e.key)) input(e.key);
+  else if (['+', '-', '*', '/', '%'].includes(e.key)) input(e.key);
+  else if (e.key === '.') input('.');
+  else if (e.key === 'Enter' || e.key === '=') calculate();
+  else if (e.key === 'Backspace') del();
+  else if (e.key === 'Escape') clearAll();
+});
+</script>
+
+</body>
+</html>
