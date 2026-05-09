@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Website Profil Desa Pucang</title>
+  <style>
+    :root{
+      --bg:#f8fafc; --white:#ffffff; --text:#1e293b; --muted:#64748b;
+      --line:#e2e8f0; --green:#059669; --green-soft:#ecfdf5;
+      --green-deep:#047857; --dark:#0f172a; --danger:#dc2626;
+    }
+    *{box-sizing:border-box} html,body{margin:0;padding:0}
+    body{font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .container{width:min(1120px,92%);margin:0 auto}
+    .section{padding:56px 0}.section-white{background:#fff}
+    .section-title{font-size:30px;margin:0 0 20px;color:var(--green-deep)}
+    .muted{color:var(--muted)}
+
+    .site-header{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .nav-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0}
+    .brand h1{margin:0;font-size:20px;color:var(--green-deep)}
+    .brand p{margin:2px 0 0;font-size:12px;color:var(--muted)}
+    .desktop-nav{display:flex;gap:6px;flex-wrap:wrap}
+    .desktop-nav button,.mobile-nav button{border:none;background:transparent;cursor:pointer;padding:8px 10px;border-radius:8px;font-weight:500;color:#475569}
+    .desktop-nav button:hover,.mobile-nav button:hover{background:var(--green-soft);color:var(--green-deep)}
+    .menu-toggle{display:none;border:1px solid var(--line);background:#fff;cursor:pointer;padding:8px 10px;border-radius:8px;font-size:18px}
+    .mobile-nav{display:none;border-top:1px solid var(--line);background:#fff;padding:8px}
+    .mobile-nav.show{display:grid;gap:4px}
+
+    .hero{position:relative;overflow:hidden}
+    .hero img{width:100%;height:62vh;object-fit:cover;display:block}
+    .hero-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.65),rgba(0,0,0,.35),rgba(0,0,0,.1))}
+    .hero-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;color:#fff;max-width:700px}
+    .pill{display:inline-block;width:fit-content;font-size:12px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;background:rgba(5,150,105,.85);border-radius:999px;padding:5px 10px}
+    .hero h2{font-size:clamp(32px,5vw,56px);margin:12px 0 8px;line-height:1.1}
+    .hero p{margin:0;color:#e2e8f0}
+
+    .grid{display:grid;gap:16px}
+    .grid-2{grid-template-columns:repeat(2,1fr)}
+    .grid-3{grid-template-columns:repeat(3,1fr)}
+    .grid-4{grid-template-columns:repeat(4,1fr)}
+    .align-center{align-items:center}.mt{margin-top:22px}.mb{margin-bottom:10px}
+
+    .card{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+    .card h4{margin:0 0 10px}
+    .soft{background:#f8fafc}
+    .soft h5{margin:0 0 10px;color:var(--green-deep);font-size:12px;letter-spacing:.7px;text-transform:uppercase}
+    .soft ul{list-style:none;padding:0;margin:0}
+    .soft li{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding:6px 0;font-size:14px}
+    .soft li span{color:#475569}.soft li b{font-weight:600}
+
+    .map-wrap{margin-top:16px;overflow:hidden;padding:0}
+    .map-head{padding:12px 16px;border-bottom:1px solid var(--line);font-weight:600}
+    .map-wrap iframe{width:100%;height:280px;border:0;display:block}
+
+    .stat-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
+    .stat-card p{margin:0;color:#64748b;font-size:14px}
+    .stat-card h4{margin:8px 0 0;color:var(--green);font-size:38px;line-height:1}
+
+    .bar-item{margin:10px 0}
+    .bar-item>div:first-child{display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px;color:#475569}
+    .bar{width:100%;height:8px;border-radius:999px;background:#e2e8f0;overflow:hidden}
+    .bar i{display:block;height:100%;background:var(--green);border-radius:999px}
+
+    .media{width:100%;height:290px;object-fit:cover;border-radius:16px}
+    .note{margin-top:14px;border:1px solid #a7f3d0;background:#ecfdf5;color:#065f46;border-radius:12px;padding:12px 14px;font-size:14px}
+    .video-wrap{margin-top:14px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#000}
+    .video-wrap video{width:100%;display:block}
+
+    .form-card select,.form-card input,.form-card textarea{
+      width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:14px;background:#fff
+    }
+    .form-card textarea{min-height:120px;resize:vertical}
+    .form-card button{
+      width:100%;border:none;border-radius:10px;padding:10px 12px;background:var(--green);color:#fff;font-weight:700;cursor:pointer
+    }
+    .form-card button:hover{background:var(--green-deep)}
+    #formInfo{min-height:20px;margin:8px 0 0;font-size:14px;font-weight:600;color:var(--green-deep)}
+    .preview-box{display:none;margin-top:8px}
+    .preview-box img{width:100%;max-height:180px;object-fit:cover;border-radius:10px;border:1px solid var(--line)}
+
+    .aduan-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+    .aduan-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{
+      border:none;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600
+    }
+    .btn-wa{background:#16a34a;color:#fff}
+    .btn-del{background:var(--danger);color:#fff}
+    .aduan-list{display:grid;gap:12px;margin-top:12px}
+    .aduan-item{border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px}
+    .aduan-meta{font-size:12px;color:var(--muted);margin-bottom:8px}
+    .aduan-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:12px}
+    .aduan-bukti img{width:100%;height:140px;object-fit:cover;border-radius:10px;border:1px solid var(--line)}
+    .empty{color:var(--muted);font-style:italic}
+
+    .site-footer{text-align:center;background:var(--dark);color:#cbd5e1;padding:18px 12px;font-size:14px}
+
+    @media (max-width:980px){.grid-4{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:760px){
+      .desktop-nav{display:none}.menu-toggle{display:block}
+      .grid-2,.grid-3,.grid-4,.aduan-grid{grid-template-columns:1fr}
+      .hero img{height:70vh}
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-row">
+      <div class="brand">
+        <h1>Website Profil Desa Pucang</h1>
+        <p>Kecamatan & Kabupaten setempat</p>
+      </div>
+      <button id="menuToggle" class="menu-toggle" aria-label="Toggle menu">☰</button>
+      <nav class="desktop-nav">
+        <button data-target="beranda">Beranda</button>
+        <button data-target="profil">Profil Desa</button>
+        <button data-target="organisasi">Struktur Organisasi</button>
+        <button data-target="statistik">Statistik Penduduk</button>
+        <button data-target="umkm">Informasi UMKM</button>
+        <button data-target="galeri">Galeri Desa</button>
+        <button data-target="kontak">Kontak & Pengaduan</button>
+      </nav>
+    </div>
+    <div id="mobileNav" class="mobile-nav">
+      <button data-target="beranda">Beranda</button>
+      <button data-target="profil">Profil Desa</button>
+      <button data-target="organisasi">Struktur Organisasi</button>
+      <button data-target="statistik">Statistik Penduduk</button>
+      <button data-target="umkm">Informasi UMKM</button>
+      <button data-target="galeri">Galeri Desa</button>
+      <button data-target="kontak">Kontak & Pengaduan</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="beranda" class="hero">
+      <img src="assets/images/desa-hero.jpg" alt="Pemandangan Desa" />
+      <div class="hero-overlay"></div>
+      <div class="container hero-content">
+        <span class="pill">Portal Resmi Desa</span>
+        <h2>Selamat Datang di Desa Pucang</h2>
+        <p>Visi: <b>Pucang maju dan sejahtera</b>. Misi: memajukan desa dengan pemerataan pembangunan.</p>
+      </div>
+    </section>
+
+    <section id="profil" class="section">
+      <div class="container">
+        <h3 class="section-title">🏠 Profil Desa</h3>
+        <div class="grid grid-2">
+          <article class="card">
+            <h4>Sejarah Desa</h4>
+            <p>Pada masa kerajaan, wilayah Desa Pucang terbagi menjadi dua bagian yaitu <b>Pucang Ndesa</b> dan <b>Pucang Mblater</b>. Seiring berjalannya waktu, keduanya disatukan dalam satu pemerintahan dengan nama <b>Desa Pucang</b>.</p>
+          </article>
+          <article class="card">
+            <h4>Visi & Misi</h4>
+            <p><b>Visi:</b> Pucang maju dan sejahtera.</p>
+            <p><b>Misi:</b> Memajukan desa dengan pemerataan pembangunan.</p>
+            <p>Profil pengembangan desa berfokus pada peningkatan sumber daya manusia (SDM), kelembagaan, serta prasarana yang terus berkembang.</p>
+          </article>
+        </div>
+        <div class="card map-wrap">
+          <div class="map-head">Peta Lokasi Desa (Google Maps Embed)</div>
+          <iframe title="Peta Desa" src="https://maps.google.com/maps?q=Indonesia&t=&z=5&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <section id="organisasi" class="section section-white">
+      <div class="container">
+        <h3 class="section-title">👥 Struktur Organisasi</h3>
+        <div class="grid grid-3">
+          <div class="card soft"><h5>Pemerintahan Desa</h5><ul>
+            <li><span>Kepala Desa</span><b>Toni Dwi Sulistyo, AMD</b></li><li><span>Sekretaris</span><b>Andi Jatmiko</b></li>
+            <li><span>Bendahara</span><b>Eko</b></li><li><span>Kaur Pemerintahan</span><b>Harsono</b></li>
+            <li><span>Kaur Perencanaan</span><b>Sugeng Rohadi</b></li><li><span>Kaur Pembangunan</span><b>Andri</b></li>
+            <li><span>Kaur Kesra</span><b>Heni</b></li><li><span>Kaur Umum</span><b>Sugino</b></li>
+          </ul></div>
+          <div class="card soft"><h5>RT 1 & RT 2</h5><ul>
+            <li><span>Ketua RT 1</span><b>Sudewan</b></li><li><span>Sekretaris RT 1</span><b>Mudiarto</b></li>
+            <li><span>Bendahara RT 1</span><b>Ismulyono</b></li><li><span>Ketua RT 2</span><b>Mistoro</b></li>
+            <li><span>Sekretaris RT 2</span><b>Novianto</b></li><li><span>Bendahara RT 2</span><b>Budi Sasonggko</b></li>
+          </ul></div>
+          <div class="card soft"><h5>PKK & Pemuda</h5><ul>
+            <li><span>Ketua PKK RT 1 RW 7</span><b>Isriwanti</b></li><li><span>Sekretaris RT 1</span><b>-</b></li>
+            <li><span>Bendahara RT 1</span><b>Ponco Septia Teni</b></li><li><span>Ketua PKK RT 2</span><b>Pujianti</b></li>
+            <li><span>Sekretaris RT 2</span><b>Hartina</b></li><li><span>Bendahara RT 2</span><b>Siti Hasana</b></li>
+            <li><span>Pemuda RT 1 & 2 RW 7</span><b>Wayan</b></li><li><span>Sekretaris</span><b>Angget Saputra</b></li>
+            <li><span>Bendahara</span><b>Fendianto</b></li>
+          </ul></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="statistik" class="section">
+      <div class="container">
+        <h3 class="section-title">📍 Statistik Penduduk</h3>
+        <div class="grid grid-4">
+          <div class="stat-card"><p>Total Penduduk</p><h4>510</h4></div>
+          <div class="stat-card"><p>Jumlah Rumah</p><h4>125</h4></div>
+          <div class="stat-card"><p>Laki-laki</p><h4>280</h4></div>
+          <div class="stat-card"><p>Perempuan</p><h4>230</h4></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="umkm" class="section section-white">
+      <div class="container grid grid-2 align-center">
+        <img class="media" src="assets/images/umkm.jpg" alt="Aktivitas UMKM" />
+        <div>
+          <h3 class="section-title">💼 Informasi UMKM</h3>
+          <p class="muted">Komposisi pekerjaan warga Desa Pucang: <b>Buruh 80%</b>, <b>PNS 5%</b>, dan <b>UMKM 15%</b>.</p>
+          <div class="note">Fokus pengembangan: produk rumahan, kerajinan, kuliner, dan pemasaran berbasis komunitas.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="galeri" class="section">
+      <div class="container">
+        <h3 class="section-title">🖼️ Galeri Desa (Foto & Video)</h3>
+        <div class="grid grid-3">
+          <img class="media" src="assets/images/desa-hero.jpg" alt="Galeri 1">
+          <img class="media" src="assets/images/balai-desa.jpg" alt="Galeri 2">
+          <img class="media" src="assets/images/umkm.jpg" alt="Galeri 3">
+        </div>
+        <div class="video-wrap"><video controls src="assets/videos/desa.mp4"></video></div>
+      </div>
+    </section>
+
+    <section id="kontak" class="section section-white">
+      <div class="container grid grid-2">
+        <div>
+          <h3 class="section-title">📞 Kontak & Pengaduan Desa</h3>
+          <div class="card mb"><p><b>Ketua RT 1: Sudewan</b></p><p>Kontak: 0821-3522-0488</p></div>
+          <div class="card mb"><p><b>Ketua RT 2: Mistoro</b></p><p>Kontak: 0821-3786-2678</p></div>
+          <div class="card muted">Pengaduan tersimpan di website (localStorage browser). Dari daftar aduan, bisa dikirim ke WhatsApp Ketua RT terkait.</div>
+        </div>
+
+        <form id="pengaduanForm" class="card form-card">
+          <h4>⚠️ Form Pengaduan (dengan bukti gambar)</h4>
+          <select id="tujuanRT" required>
+            <option value="">Pilih tujuan pengaduan</option>
+            <option value="rt1">Ketua RT 1 - Sudewan</option>
+            <option value="rt2">Ketua RT 2 - Mistoro</option>
+          </select>
+          <input id="nama" type="text" placeholder="Nama lengkap" required />
+          <input id="kontakInput" type="text" placeholder="Nomor kontak" required />
+          <textarea id="pesan" placeholder="Tulis pengaduan atau masukan..." required></textarea>
+          <input id="buktiGambar" type="file" accept="image/*" />
+          <div class="preview-box" id="previewBox">
+            <img id="previewImg" alt="Preview bukti" />
+          </div>
+          <button type="submit">Simpan Pengaduan ke Website</button>
+          <p id="formInfo"></p>
+        </form>
+      </div>
+
+      <div class="container" style="margin-top:20px;">
+        <div class="card">
+          <div class="aduan-head">
+            <h4 style="margin:0">📋 Daftar Pengaduan Masuk</h4>
+            <div class="aduan-actions">
+              <button id="hapusSemuaBtn" class="btn btn-del">Hapus Semua</button>
+            </div>
+          </div>
+          <div id="aduanList" class="aduan-list"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">© <span id="yearNow"></span> Desa Pucang — Website Profil Desa.</footer>
+
+  <script>
+    // ===== NAV =====
+    function goToSection(id){
+      const el=document.getElementById(id);
+      if(el) el.scrollIntoView({behavior:"smooth", block:"start"});
+    }
+    const mobileNav=document.getElementById("mobileNav");
+    document.querySelectorAll("[data-target]").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        goToSection(btn.dataset.target);
+        mobileNav.classList.remove("show");
+      });
+    });
+    document.getElementById("menuToggle").addEventListener("click",()=>mobileNav.classList.toggle("show"));
+    document.getElementById("yearNow").textContent=new Date().getFullYear();
+
+    // ===== PENGADUAN =====
+    const KEY = "pengaduanDesaPucangV2";
+    const kontakRT = {
+      rt1: { nama: "Ketua RT 1 (Sudewan)", wa: "6282135220488" },
+      rt2: { nama: "Ketua RT 2 (Mistoro)", wa: "6282137862678" }
+    };
+
+    const form = document.getElementById("pengaduanForm");
+    const formInfo = document.getElementById("formInfo");
+    const aduanList = document.getElementById("aduanList");
+    const hapusSemuaBtn = document.getElementById("hapusSemuaBtn");
+    const buktiInput = document.getElementById("buktiGambar");
+    const previewBox = document.getElementById("previewBox");
+    const previewImg = document.getElementById("previewImg");
+
+    let buktiBase64 = "";
+
+    // Preview gambar
+    buktiInput.addEventListener("change", function(){
+      const file = this.files[0];
+      if(!file){
+        buktiBase64 = "";
+        previewBox.style.display = "none";
+        previewImg.src = "";
+        return;
+      }
+
+      if(!file.type.startsWith("image/")){
+        alert("File harus berupa gambar.");
+        this.value = "";
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e){
+        buktiBase64 = e.target.result;
+        previewImg.src = buktiBase64;
+        previewBox.style.display = "block";
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function getData(){
+      return JSON.parse(localStorage.getItem(KEY) || "[]");
+    }
+
+    function setData(data){
+      localStorage.setItem(KEY, JSON.stringify(data));
+    }
+
+    function formatTanggal(iso){
+      const d = new Date(iso);
+      return d.toLocaleString("id-ID", { dateStyle:"medium", timeStyle:"short" });
+    }
+
+    function kirimWA(item){
+      const tujuan = kontakRT[item.tujuan];
+      const isi =
+`Pengaduan Warga Desa Pucang
+Tujuan: ${tujuan.nama}
+
+Nama: ${item.nama}
+No Kontak: ${item.kontak}
+Waktu Aduan: ${formatTanggal(item.waktuISO)}
+
+Isi Pengaduan:
+${item.pesan}`;
+
+      const url = `https://wa.me/${tujuan.wa}?text=${encodeURIComponent(isi)}`;
+      window.open(url, "_blank");
+    }
+
+    function hapusAduan(id){
+      const data = getData().filter(item => item.id !== id);
+      setData(data);
+      renderAduan();
+    }
+
+    function renderAduan(){
+      const data = getData();
+
+      if(data.length === 0){
+        aduanList.innerHTML = `<p class="empty">Belum ada pengaduan.</p>`;
+        return;
+      }
+
+      aduanList.innerHTML = data.slice().reverse().map(item => `
+        <div class="aduan-item">
+          <div class="aduan-meta">
+            ${formatTanggal(item.waktuISO)} • Tujuan: ${kontakRT[item.tujuan].nama}
+          </div>
+          <div class="aduan-grid">
+            <div>
+              <p><b>${item.nama}</b> (${item.kontak})</p>
+              <p style="white-space:pre-wrap">${item.pesan}</p>
+              <div class="aduan-actions">
+                <button class="btn btn-wa" onclick="kirimWAGlobal('${item.id}')">Kirim ke WhatsApp RT</button>
+                <button class="btn btn-del" onclick="hapusAduanGlobal('${item.id}')">Hapus</button>
+              </div>
+            </div>
+            <div class="aduan-bukti">
+              ${item.bukti ? `<img src="${item.bukti}" alt="Bukti Aduan">` : `<div class="empty">Tanpa gambar bukti</div>`}
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    // Expose untuk onclick inline
+    window.kirimWAGlobal = function(id){
+      const item = getData().find(x => x.id === id);
+      if(item) kirimWA(item);
+    };
+    window.hapusAduanGlobal = function(id){
+      hapusAduan(id);
+    };
+
+    form.addEventListener("submit", function(e){
+      e.preventDefault();
+
+      const tujuan = document.getElementById("tujuanRT").value;
+      const nama = document.getElementById("nama").value.trim();
+      const kontak = document.getElementById("kontakInput").value.trim();
+      const pesan = document.getElementById("pesan").value.trim();
+
+      if(!tujuan || !nama || !kontak || !pesan){
+        formInfo.style.color = "crimson";
+        formInfo.textContent = "Semua kolom wajib diisi.";
+        return;
+      }
+
+      const data = getData();
+      data.push({
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+        tujuan,
+        nama,
+        kontak,
+        pesan,
+        bukti: buktiBase64 || "",
+        waktuISO: new Date().toISOString()
+      });
+      setData(data);
+
+      formInfo.style.color = "#047857";
+      formInfo.textContent = "Pengaduan berhasil disimpan di website.";
+
+      form.reset();
+      buktiBase64 = "";
+      previewImg.src = "";
+      previewBox.style.display = "none";
+
+      renderAduan();
+    });
+
+    hapusSemuaBtn.addEventListener("click", function(){
+      if(confirm("Yakin ingin menghapus semua pengaduan?")){
+        localStorage.removeItem(KEY);
+        renderAduan();
+      }
+    });
+
+    renderAduan();
+  </script>
+</body>
+</html>
