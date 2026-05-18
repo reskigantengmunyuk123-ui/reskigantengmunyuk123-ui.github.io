@@ -721,6 +721,35 @@
             <div id="aduanList" class="aduan-list"></div>
           </div>
         </div>
+
+        <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // 1. Ambil elemen tombol strip tiga dan menu HP
+    const menuToggle = document.getElementById("menuToggle");
+    const mobileNav = document.getElementById("mobileNav");
+
+    // 2. Jalankan fungsi ini saat tombol diklik
+    menuToggle.addEventListener("click", function(e) {
+      e.stopPropagation(); // Mencegah bentrok klik ke elemen lain
+      mobileNav.classList.toggle("active");
+    });
+
+    // 3. Otomatis tutup menu kalau salah satu menu diklik
+    const mobileButtons = mobileNav.querySelectorAll("button");
+    mobileButtons.forEach(button => {
+      button.addEventListener("click", function() {
+        mobileNav.classList.remove("active");
+      });
+    });
+
+    // 4. Otomatis tutup menu kalau user klik di luar area menu
+    document.addEventListener("click", function(e) {
+      if (!mobileNav.contains(e.target) && e.target !== menuToggle) {
+        mobileNav.classList.remove("active");
+      }
+    });
+  });
+</script>
       </section>
     </main>
 
