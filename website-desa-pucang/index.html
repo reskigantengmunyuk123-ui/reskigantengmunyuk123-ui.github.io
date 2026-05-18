@@ -747,23 +747,46 @@
 
     <footer class="site-footer">© <span id="yearNow"></span> Desa Pucang — Website Profil Desa.</footer>
 
-    <script>
-      // ===== NAV =====
+<script>
+      // ==========================================
+      // 1. FUNGSI NAVIGASI MENU (STRIP TIGA) ANTI-BENTROK
+      // ==========================================
+      const menuToggle = document.getElementById("menuToggle");
+      const mobileNav = document.getElementById("mobileNav");
+
+      // Buka/tutup menu saat tombol strip tiga diklik
+      menuToggle.addEventListener("click", function(e) {
+        e.stopPropagation();
+        mobileNav.classList.toggle("show");
+      });
+
+      // Pindah seksi halaman secara halus (Smooth Scroll)
       function goToSection(id) {
         const el = document.getElementById(id);
         if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
       }
-      const mobileNav = document.getElementById("mobileNav");
+
+      // Pasang fungsi klik untuk semua tombol menu
       document.querySelectorAll("[data-target]").forEach((btn) => {
         btn.addEventListener("click", () => {
           goToSection(btn.dataset.target);
-          mobileNav.classList.remove("show");
+          mobileNav.classList.remove("show"); // Otomatis tutup menu di HP setelah diklik
         });
       });
-      document.getElementById("menuToggle").addEventListener("click", () => mobileNav.classList.toggle("show"));
+
+      // Otomatis tutup menu jika pengguna mengklik area luar menu
+      document.addEventListener("click", function(e) {
+        if (mobileNav && !mobileNav.contains(e.target) && e.target !== menuToggle) {
+          mobileNav.classList.remove("show");
+        }
+      });
+
+      // Atur tahun otomatis di footer
       document.getElementById("yearNow").textContent = new Date().getFullYear();
 
-      // ===== PENGADUAN =====
+      // ==========================================
+      // 2. SISTEM PENGADUAN WARGA (LOCALSTORAGE)
+      // ==========================================
       const KEY = "pengaduanDesaPucangV2";
       const kontakRT = {
         rt1: { nama: "Ketua RT 1 (Sudewan)", wa: "6282135220488" },
@@ -774,36 +797,6 @@
       const formInfo = document.getElementById("formInfo");
       const aduanList = document.getElementById("aduanList");
       const hapusSemuaBtn = document.getElementById("hapusSemuaBtn");
-      const buktiInput = document.getElementById("buktiGambar");
-      const previewBox = document.getElementById("previewBox");
-      const previewImg = document.getElementById("previewImg");
-
-      let buktiBase64 = "";
-
-      // Preview gambar
-      buktiInput.addEventListener("change", function () {
-        const file = this.files[0];
-        if (!file) {
-          buktiBase64 = "";
-          previewBox.style.display = "none";
-          previewImg.src = "";
-          return;
-        }
-
-        if (!file.type.startsWith("image/")) {
-          alert("File harus berupa gambar.");
-          this.value = "";
-          return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          buktiBase64 = e.target.result;
-          previewImg.src = buktiBase64;
-          previewBox.style.display = "block";
-        };
-        reader.readAsDataURL(file);
-      });
 
       function getData() {
         return JSON.parse(localStorage.getItem(KEY) || "[]");
@@ -818,28 +811,26 @@
         return d.toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" });
       }
 
-      function kirimWA(item) {
+      // Fungsi Kirim ke WhatsApp
+      window.kirimWAGlobal = function (id) {
+        const item = getData().find((x) => x.id === id);
+        if (!item) return;
+
         const tujuan = kontakRT[item.tujuan];
-        const isi = `Pengaduan Warga Desa Pucang
-         Tujuan: ${tujuan.nama}
-
-         Nama: ${item.nama}
-         No Kontak: ${item.kontak}
-         Waktu Aduan: ${formatTanggal(item.waktuISO)}
-
-         Isi Pengaduan:
-         ${item.pesan}`;
+        const isi = `Pengaduan Warga Desa Pucang\nTujuan: ${tujuan.nama}\n\nNama: ${item.nama}\nNo Kontak: ${item.kontak}\nWaktu Aduan: ${formatTanggal(item.waktuISO)}\n\nIsi Pengaduan:\n${item.pesan}`;
 
         const url = `https://wa.me/${tujuan.wa}?text=${encodeURIComponent(isi)}`;
         window.open(url, "_blank");
-      }
+      };
 
-      function hapusAduan(id) {
+      // Fungsi Hapus Satu Aduan
+      window.hapusAduanGlobal = function (id) {
         const data = getData().filter((item) => item.id !== id);
         setData(data);
         renderAduan();
-      }
+      };
 
+      // Tampilkan Daftar Pengaduan di Layar
       function renderAduan() {
         const data = getData();
 
@@ -853,11 +844,10 @@
           .reverse()
           .map(
             (item) => `
-        <div class="aduan-item">
-          <div class="aduan-meta">
-            ${formatTanggal(item.waktuISO)} • Tujuan: ${kontakRT[item.tujuan].nama}
-          </div>
-          <div class="aduan-grid">
+          <div class="aduan-item">
+            <div class="aduan-meta">
+              ${formatTanggal(item.waktuISO)} • Tujuan: ${kontakRT[item.tujuan]?.nama || "-"}
+            </div>
             <div>
               <p><b>${item.nama}</b> (${item.kontak})</p>
               <p style="white-space:pre-wrap">${item.pesan}</p>
@@ -866,25 +856,13 @@
                 <button class="btn btn-del" onclick="hapusAduanGlobal('${item.id}')">Hapus</button>
               </div>
             </div>
-            <div class="aduan-bukti">
-              ${item.bukti ? `<img src="${item.bukti}" alt="Bukti Aduan">` : `<div class="empty">Tanpa gambar bukti</div>`}
-            </div>
           </div>
-        </div>
-      `,
+        `
           )
           .join("");
       }
 
-      // Expose untuk onclick inline
-      window.kirimWAGlobal = function (id) {
-        const item = getData().find((x) => x.id === id);
-        if (item) kirimWA(item);
-      };
-      window.hapusAduanGlobal = function (id) {
-        hapusAduan(id);
-      };
-
+      // Event saat Form Submit
       form.addEventListener("submit", function (e) {
         e.preventDefault();
 
@@ -906,22 +884,18 @@
           nama,
           kontak,
           pesan,
-          bukti: buktiBase64 || "",
           waktuISO: new Date().toISOString(),
         });
         setData(data);
 
         formInfo.style.color = "#047857";
-        formInfo.textContent = "Pengaduan berhasil disimpan di website.";
+        formInfo.textContent = "Pengaduan berhasil disimpan.";
 
         form.reset();
-        buktiBase64 = "";
-        previewImg.src = "";
-        previewBox.style.display = "none";
-
         renderAduan();
       });
 
+      // Tombol Hapus Semua
       hapusSemuaBtn.addEventListener("click", function () {
         if (confirm("Yakin ingin menghapus semua pengaduan?")) {
           localStorage.removeItem(KEY);
@@ -929,179 +903,8 @@
         }
       });
 
+      // Jalankan fungsi tampilkan aduan saat web dibuka
       renderAduan();
     </script>
-
-    <script>
-      function goToSection(id) {
-        const el = document.getElementById(id);
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-
-      const mobileNav1 = document.getElementById("mobileNav");
-      document.querySelectorAll("[data-target]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          goToSection(btn.dataset.target);
-          mobileNav1.classList.remove("show");
-        });
-      });
-      document.getElementById("menuToggle").addEventListener("click", () => mobileNav1.classList.toggle("show"));
-      document.getElementById("yearNow").textContent = new Date().getFullYear();
-
-      const kontakRT1 = {
-        rt1: { nama: "Ketua RT 1 (Sudewan)", wa: "6282135220488" },
-        rt2: { nama: "Ketua RT 2 (Mistoro)", wa: "6282137862678" },
-      };
-
-      const KEY1 = "pengaduanDesaPucangNoImage";
-      const form1 = document.getElementById("pengaduanForm");
-      const formInfo1 = document.getElementById("formInfo");
-      const aduanList1 = document.getElementById("aduanList");
-      const hapusSemuaBtn1 = document.getElementById("hapusSemuaBtn");
-
-      function getData() {
-        return JSON.parse(localStorage.getItem(KEY1) || "[]");
-      }
-
-      function setData(data) {
-        localStorage.setItem(KEY1, JSON.stringify(data));
-      }
-
-      function formatTanggal(iso) {
-        const d = new Date(iso);
-        return d.toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" });
-      }
-
-      function kirimWA(item) {
-        const tujuan = kontakRT[item.tujuan];
-        const isi = `Pengaduan Warga Desa Pucang
-         Tujuan: ${tujuan.nama}
-
-         Nama: ${item.nama}
-         No Kontak: ${item.kontak}
-         Waktu Aduan: ${formatTanggal(item.waktuISO)}
-
-         Isi Pengaduan: ${item.pesan}`;
-
-        const url = `https://wa.me/${tujuan.wa}?text=${encodeURIComponent(isi)}`;
-        window.open(url, "_blank");
-      }
-
-      function hapusAduan(id) {
-        const data = getData().filter((item) => item.id !== id);
-        setData(data);
-        renderAduan();
-      }
-
-      function renderAduan() {
-        const data = getData();
-
-        if (data.length === 0) {
-          aduanList1.innerHTML = `<p class="empty">Belum ada pengaduan.</p>`;
-          return;
-        }
-
-        aduanList1.innerHTML = data
-          .slice()
-          .reverse()
-          .map(
-            (item) => `
-      <div class="aduan-item">
-        <div class="aduan-meta">
-          ${formatTanggal(item.waktuISO)} • Tujuan: ${kontakRT1[item.tujuan]?.nama || "-"}
-        </div>
-        <div>
-          <p><b>${item.nama}</b> (${item.kontak})</p>
-          <p style="white-space:pre-wrap">${item.pesan}</p>
-          <div class="aduan-actions">
-            <button class="btn btn-wa" onclick="kirimWAGlobal('${item.id}')">Kirim ke WhatsApp RT</button>
-            <button class="btn btn-del" onclick="hapusAduanGlobal('${item.id}')">Hapus</button>
-          </div>
-        </div>
-      </div>
-    `,
-          )
-          .join("");
-      }
-
-      window.kirimWAGlobal = function (id) {
-        const item = getData().find((x) => x.id === id);
-        if (item) kirimWA(item);
-      };
-
-      window.hapusAduanGlobal = function (id) {
-        hapusAduan(id);
-      };
-
-      form1.addEventListener("submit", function (e) {
-        e.preventDefault();
-
-        const tujuan = document.getElementById("tujuanRT").value;
-        const nama = document.getElementById("nama").value.trim();
-        const kontak = document.getElementById("kontakInput").value.trim();
-        const pesan = document.getElementById("pesan").value.trim();
-
-        if (!tujuan || !nama || !kontak || !pesan) {
-          formInfo1.style.color = "crimson";
-          formInfo1.textContent = "Semua kolom wajib diisi.";
-          return;
-        }
-
-        const data = getData();
-        data.push({
-          id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
-          tujuan,
-          nama,
-          kontak,
-          pesan,
-          waktuISO: new Date().toISOString(),
-        });
-        setData(data);
-
-        formInfo1.style.color = "#047857";
-        formInfo1.textContent = "Pengaduan berhasil disimpan.";
-
-        form1.reset();
-        renderAduan();
-      });
-
-      hapusSemuaBtn1.addEventListener("click", function () {
-        if (confirm("Yakin ingin menghapus semua pengaduan?")) {
-          localStorage.removeItem(KEY1);
-          renderAduan();
-        }
-      });
-
-      renderAduan();
-    </script>
-
-    <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    // 1. Ambil elemen tombol strip tiga dan menu HP
-    const menuToggle = document.getElementById("menuToggle");
-    const mobileNav = document.getElementById("mobileNav");
-
-    // 2. Jalankan fungsi ini saat tombol diklik
-    menuToggle.addEventListener("click", function(e) {
-      e.stopPropagation(); // Mencegah bentrok klik ke elemen lain
-      mobileNav.classList.toggle("active");
-    });
-
-    // 3. Otomatis tutup menu kalau salah satu menu diklik
-    const mobileButtons = mobileNav.querySelectorAll("button");
-    mobileButtons.forEach(button => {
-      button.addEventListener("click", function() {
-        mobileNav.classList.remove("active");
-      });
-    });
-
-    // 4. Otomatis tutup menu kalau user klik di luar area menu
-    document.addEventListener("click", function(e) {
-      if (!mobileNav.contains(e.target) && e.target !== menuToggle) {
-        mobileNav.classList.remove("active");
-      }
-    });
-  });
-</script>
   </body>
 </html>
